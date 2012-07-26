@@ -1,0 +1,13 @@
+.timeline {
+   background-color: red;
+   margin: 0px;
+   padding: 0px;
+
+   position: relative;
+}
+
+.event {
+   position: absolute;
+   display: inline-block;
+   margin: 10px;
+}
