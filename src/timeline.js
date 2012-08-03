@@ -4,6 +4,19 @@ window.Timeline = {};
 
 }(window.Timeline, window.Handlebars));
 
+
+
+function elmBox(elm) {
+   var pos = elm.position()
+   ,   x   = pos.left
+   ,   y   = pos.top;
+   return {x1: x,
+           y1: y,
+           x2: x + elm.outerWidth(),
+           y2: y + elm.outerHeight()}
+}
+
+
 (function(Timeline, Backbone) {
    Timeline.Event = Backbone.Model.extend({
    });
@@ -23,7 +36,7 @@ window.Timeline = {};
       model: null,
 
       render: function() {
-         this.$el.html(JSON.stringify(this.model.attributes));
+         this.$el.html(this.model.get('title'));
          return this;
       }
    });
@@ -96,21 +109,67 @@ window.Timeline = {};
       }
    });
 
+
+
+
    Timeline.LayoutEngine = function () {
    };
 
    _.extend(Timeline.LayoutEngine.prototype, {
       doLayout: function(views) {
-         var y = 0, min = views[0].model.get('start');
+         var min_date = views[0].model.get('start')
+         ,   placed_views = [];
 
          _.each(views, function(view) {
-            var new_y = y + view.$el.outerHeight(true)
-            ,   x = this.dateToPixel(view.model.get('start'), min);
-            console.log(x);
+            var x = this.dateToPixel(view.model.get('start'), min_date);
+
+            // filter out views that will never collide with this
+            placed_views = this._filterViewsColliding(placed_views, x, x+view.$el.outerWidth());
+
+            // Set X now as no force on earth can change this
             view.$el.css('left', x);
-            view.$el.css('top', y);
-            y  = new_y;
+
+            // Determine the lowest Y value that can paint this element without
+            // colliding with others
+            view.$el.css('top', this._findBestHeight(placed_views, view));
+
+            // Store the view so that we can test for collisions
+            // with later events.
+            placed_views.push(view);
          }, this);
+      },
+
+      _findBestHeight: function(placed, view) {
+         var y1     = 0
+         ,   y2     = view.$el.height()
+         ,   height = y2
+         ,   p_box;
+
+         for (var i = 0; i < placed.length, v = placed[i]; i++) {
+            p_box = elmBox(v.$el);
+            if ((y1 < p_box.y2), (y2 > p_box.y1)) { // ! collide
+               y1 = p_box.y2;
+               y2 = y1 + height;
+            }
+            else {
+               break;
+            }
+         }
+
+         return y1;
+      },
+
+      _filterViewsColliding: function(views, left, right) {
+         views = _.filter(views, function(v) {
+            var left2  = v.$el.position().left
+            ,   right2 = left2 + v.$el.outerWidth();
+
+            return (left < right2) || (right < left2);
+         });
+
+         return _.sortBy(views, function(v) {
+            return v.$el.position().top;
+         });
       },
 
       dateToPixel: function(date, min) {

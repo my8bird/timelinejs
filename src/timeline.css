@@ -4,10 +4,12 @@
    padding: 0px;
 
    position: relative;
+
+   overflow-x: scroll;
 }
 
 .event {
    position: absolute;
    display: inline-block;
-   margin: 10px;
+   padding: 10px;
 }
