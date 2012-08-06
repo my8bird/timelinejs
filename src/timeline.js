@@ -12,8 +12,8 @@ function elmBox(elm) {
    ,   y   = pos.top;
    return {x1: x,
            y1: y,
-           x2: x + elm.outerWidth(),
-           y2: y + elm.outerHeight()}
+           x2: x + elm.outerWidth(true),
+           y2: y + elm.outerHeight(true)}
 }
 
 
@@ -33,10 +33,12 @@ function elmBox(elm) {
       tagName:   'div',
       className: 'event',
 
+      template: Handlebars.compile('{{title}}'),
+
       model: null,
 
       render: function() {
-         this.$el.html(this.model.get('title'));
+         this.$el.html(this.template(this.model.attributes));
          return this;
       }
    });
@@ -124,7 +126,7 @@ function elmBox(elm) {
             var x = this.dateToPixel(view.model.get('start'), min_date);
 
             // filter out views that will never collide with this
-            placed_views = this._filterViewsColliding(placed_views, x, x+view.$el.outerWidth());
+            placed_views = this._filterViewsColliding(placed_views, x, x+view.$el.outerWidth(true));
 
             // Set X now as no force on earth can change this
             view.$el.css('left', x);
@@ -162,7 +164,7 @@ function elmBox(elm) {
       _filterViewsColliding: function(views, left, right) {
          views = _.filter(views, function(v) {
             var left2  = v.$el.position().left
-            ,   right2 = left2 + v.$el.outerWidth();
+            ,   right2 = left2 + v.$el.outerWidth(true);
 
             return (left < right2) || (right < left2);
          });
