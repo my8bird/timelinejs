@@ -1,9 +1,6 @@
+"use strict";
+
 window.Timeline = {};
-
-(function (Timeline, Handlebars) {
-
-}(window.Timeline, window.Handlebars));
-
 
 
 function elmBox(elm) {
@@ -69,6 +66,7 @@ function elmBox(elm) {
 
       render: function() {
          var el         = this.el
+         ,   children   = null
          ,   collection = this._options.collection;
 
          this._children = children = collection.map(function(event) {
@@ -143,11 +141,11 @@ function elmBox(elm) {
 
       _findBestHeight: function(placed, view) {
          var y1     = 0
-         ,   y2     = view.$el.height()
+         ,   y2     = view.$el.outerHeight(true)
          ,   height = y2
-         ,   p_box;
+         ,   p_box, v, i;
 
-         for (var i = 0; i < placed.length, v = placed[i]; i++) {
+         for (i = 0; i < placed.length, v = placed[i]; i++) {
             p_box = elmBox(v.$el);
             if ((y1 < p_box.y2), (y2 > p_box.y1)) { // ! collide
                y1 = p_box.y2;
