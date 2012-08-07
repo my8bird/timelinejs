@@ -1,0 +1,27 @@
+{
+  "name": "timeline",
+  "keywords": [],
+  "description": "",
+  "homepage": "",
+  "version": "0.0.1",
+  "main": "",
+  "engines": {
+  },
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/my8bird/XXXXX.git"
+  },
+  "bugs": {
+    "url": "https://github.com/my8bird/XXXXXXXX/issues"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "jshint": "0.7.x"
+  },
+  "contributors": [
+    "Nathan Landis <my8bird@gmail.com>"
+  ]
+}
