@@ -12,6 +12,14 @@ T.elmBox = (elm) ->
       y2: y + elm.outerHeight(true)
    }
 
+T.getWidthHeight = (elm) ->
+   return {
+      x: x
+      y: y
+      w: x + elm.outerWidth(true)
+      h: y + elm.outerHeight(true)
+   }
+
 
 T.Event = Backbone.Model.extend({})
 
@@ -71,7 +79,11 @@ T.TimelineView = Backbone.View.extend
 
    _updateLayout: () ->
       setTimeout () =>
-         @_layout.doLayout(@_children)
+         views = @_children
+         new_positions = @_layout.doLayout(@_children[0].model.get('start'), @_children)
+         _.each _.zip(views, new_positions), ([v, [left, top]]) ->
+            v.$el.css('left', left)
+            v.$el.css('top',  top)
 
    _onEventAdded: (model) ->
       # Build a new view for this event
