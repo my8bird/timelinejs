@@ -1,0 +1,76 @@
+window.Timeline = T = {};
+
+T.Event = Backbone.Model.extend({})
+
+
+T.EventCollection = Backbone.Collection.extend
+   model: Timeline.Event
+
+   comparator: (event) ->
+      event.get('start')
+
+
+
+T.EventView = Backbone.View.extend
+   tagName:   'div'
+   className: 'event'
+   template: Handlebars.compile('{{title}}'),
+
+   model: null
+
+   render: () ->
+      @$el.html(@template(@model.attributes))
+      @
+
+
+T.TimelineView = Backbone.View.extend
+   tagName:   'div'
+   className: 'timeline'
+
+   collection:  null
+   _eventViews: []
+
+   events: {}
+
+   initialize: (options) ->
+      _.defaults(options, {collection: null})
+      collection = options.collection
+
+      @_options  = options
+      @_layout   = new Timeline.LayoutEngine()
+      @_children = []
+
+      if (collection)
+         collection.on('add',    @_onEventAdded,   @)
+         collection.on('remove', @_onEventRemoved, @)
+         collection.on('change', @_onEventChanged, @)
+
+   render: () ->
+      collection = @_options.collection
+
+      @_children = collection.map (event) =>
+         view = new Timeline.EventView {model: event}
+         @el.appendChild(view.render().el)
+         view
+
+      @_updateLayout()
+
+   _updateLayout: () ->
+      setTimeout () =>
+         @_layout.doLayout(@_children)
+
+   _onEventAdded: (model) ->
+      # Build a new view for this event
+      view = new Timeline.EventView({model: model})
+
+      # Store it for later
+      @_eventViews[model.id] = view
+
+      # Show it to the world
+      @$el.append(view.render().el)
+
+      # Ask the layout engine to move anything that may have issues now.
+
+   _onEventRemoved: (model) ->
+
+   _onEventChanged: () ->
