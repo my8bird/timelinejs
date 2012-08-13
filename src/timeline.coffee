@@ -1,4 +1,17 @@
-window.Timeline = T = {};
+window.Timeline = T = {}
+
+T.elmBox = (elm) ->
+   pos = elm.position()
+   x   = pos.left
+   y   = pos.top
+
+   return {
+      x1: x
+      y1: y
+      x2: x + elm.outerWidth(true)
+      y2: y + elm.outerHeight(true)
+   }
+
 
 T.Event = Backbone.Model.extend({})
 
@@ -21,6 +34,7 @@ T.EventView = Backbone.View.extend
    render: () ->
       @$el.html(@template(@model.attributes))
       @
+
 
 
 T.TimelineView = Backbone.View.extend
